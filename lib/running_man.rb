@@ -38,6 +38,8 @@ module RunningMan
       end
     end
   end
+
+  autoload :ActiveRecordBlock, 'running_man/active_record_block'
 end
 
 require 'running_man/block'
