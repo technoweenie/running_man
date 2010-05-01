@@ -12,10 +12,10 @@ Gem::Specification.new do |s|
   ## Leave these as is they will be modified for you by the rake gemspec task.
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
-  s.name              = 'NAME'
-  s.version           = '0.0'
-  s.date              = '2010-01-01'
-  s.rubyforge_project = 'NAME'
+  s.name              = 'running_man'
+  s.version           = '0.1'
+  s.date              = '2010-05-01'
+  s.rubyforge_project = 'running_man'
 
   ## Make sure your summary is short. The description may be as long
   ## as you like.
@@ -37,7 +37,19 @@ Gem::Specification.new do |s|
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE
   ## THE MANIFEST COMMENTS, they are used as delimiters by the task.
   # = MANIFEST =
-  s.files = %w[]
+  s.files = %w[
+    LICENSE
+    README.md
+    Rakefile
+    lib/running_man.rb
+    lib/running_man/active_record_block.rb
+    lib/running_man/block.rb
+    running_man.gemspec
+    test/running_man/active_record_block_test.rb
+    test/running_man/block_helper_test.rb
+    test/running_man/block_test.rb
+    test/test_helper.rb
+  ]
   # = MANIFEST =
 
   ## Test files will be grabbed from the file list. Make sure the path glob
