@@ -9,11 +9,13 @@ class BlockHelperTest < Test::Unit::TestCase
   original_string = 'abc'.freeze
 
   setup_once do
+    assert_equal 'BlockHelperTest', self.class.name
     @a = original_string
     self.class.block_calls += 1
   end
 
   teardown_once do
+    assert_equal 'BlockHelperTest', self.class.name
     assert_equal original_string, @a
     assert_equal original_string.object_id, @a.object_id
     assert_equal 1, self.class.block_calls
