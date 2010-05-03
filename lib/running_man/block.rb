@@ -6,6 +6,10 @@ module RunningMan
         test_block = RunningMan::Block.new(block)
         setup { test_block.run(self) }
       end
+
+      def teardown_once(&block)
+        final_teardowns << RunningMan::Block.new(block)
+      end
     end
 
     # block_arg - Optional Proc of code that runs only once for the test case.
@@ -43,10 +47,10 @@ module RunningMan
     # Returns nothing.
     def run_once(binding)
       @ivars.clear
-      before = instance_variables
-      instance_eval(&@block)
-      (instance_variables - before).each do |ivar|
-        @ivars[ivar] = instance_variable_get(ivar)
+      before = binding.instance_variables
+      binding.instance_eval(&@block)
+      (binding.instance_variables - before).each do |ivar|
+        @ivars[ivar] = binding.instance_variable_get(ivar)
       end
     end
 
@@ -75,6 +79,37 @@ module RunningMan
     # Returns a Boolean.
     def run_once?
       !!@run
+    end
+  end
+end
+
+# TODO: Add MiniTest support for ruby 1.9
+if defined?(Test::Unit::TestSuite) && defined?(Test::Unit::TestCase)
+  module Test
+    module Unit
+      class TestCase
+        def self.final_teardowns
+          @final_teardowns ||= []
+        end
+      end
+
+      class Suite
+        def run(result, &progress_block) # :nodoc:
+          yield(STARTED, name)
+          klass_to_teardown = if @tests.first.is_a?(Test::Unit::TestCase)
+            @tests.first.class
+          end
+          @tests.each do |test|
+            test.run(result, &progress_block)
+          end
+          if klass_to_teardown
+            klass_to_teardown.final_teardowns.each do |teardown|
+              teardown.run(@tests.last)
+            end
+          end
+          yield(FINISHED, name)
+        end
+      end
     end
   end
 end
