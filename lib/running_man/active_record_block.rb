@@ -8,14 +8,20 @@ module RunningMan
     module TestClassMethods
       def fixtures(&block)
         test_block = RunningMan::ActiveRecordBlock.new(block)
+        active_record_fixtures_setup(test_block)
+        active_record_fixtures_teardown
+      end
+
+      def active_record_fixtures_setup(test_block)
         setup do
           test_block.run(self)
-
           # Open a new transaction before running any test.
           ActiveRecord::Base.connection.increment_open_transactions
           ActiveRecord::Base.connection.begin_db_transaction
         end
+      end
 
+      def active_record_fixtures_teardown
         teardown do
           # Rollback our transaction, returning our fixtures to a pristine
           # state.
