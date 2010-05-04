@@ -93,7 +93,7 @@ if defined?(Test::Unit::TestSuite) && defined?(Test::Unit::TestCase)
         end
       end
 
-      class Suite
+      class TestSuite
         def run(result, &progress_block) # :nodoc:
           yield(STARTED, name)
           klass_to_teardown = if @tests.first.is_a?(Test::Unit::TestCase)
