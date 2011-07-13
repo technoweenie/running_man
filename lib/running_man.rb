@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__))
 
 module RunningMan
-  VERSION = '0.2.1'
+  VERSION = '0.3.0'
 
   # Public: Sets up any helper class methods in TestClassMethods on the 
   # specified test case class.
