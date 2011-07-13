@@ -6,36 +6,45 @@ module RunningMan
   # See README for instructions on use.
   class ActiveRecordBlock < Block
     module TestClassMethods
+      # Runs this block once, which should insert records through ActiveRecord.
+      # Test Cases should only have one #fixtures call, and it should be at the
+      # first run callback.
       def fixtures(&block)
-        test_block = RunningMan::ActiveRecordBlock.new(block)
-        active_record_fixtures_setup(test_block)
-        active_record_fixtures_teardown
+        RunningMan::ActiveRecordBlock.new(block).setup(self)
       end
+    end
 
-      def active_record_fixtures_setup(test_block)
-        setup do
-          test_block.run(self)
-          # Open a new transaction before running any test.
-          ActiveRecord::Base.connection.increment_open_transactions
-          ActiveRecord::Base.connection.begin_db_transaction
-        end
-      end
-
-      def active_record_fixtures_teardown
-        teardown do
-          # Rollback our transaction, returning our fixtures to a pristine
-          # state.
-          ActiveRecord::Base.connection.rollback_db_transaction
-          ActiveRecord::Base.connection.decrement_open_transactions
-          ActiveRecord::Base.clear_active_connections!
-        end
-      end
+    # Ensure the block is setup to run first, and that the test run is wrapped
+    # in a database transaction.
+    def setup(test_class)
+      block = self
+      test_class.setup    { block.run(self) }
+      test_class.teardown { block.teardown_transaction }
     end
 
     # Clear the database before running the block.
     def run_once(binding)
       clear_database
       super
+    end
+
+    # Sets up an ActiveRecord transition before every test.
+    def run(binding)
+      super
+      setup_transaction
+    end
+
+    # Open a new transaction before running any test.
+    def setup_transaction
+      ActiveRecord::Base.connection.increment_open_transactions
+      ActiveRecord::Base.connection.begin_db_transaction
+    end
+
+    # Rollback our transaction, returning our fixtures to a pristine state.
+    def teardown_transaction
+      ActiveRecord::Base.connection.rollback_db_transaction
+      ActiveRecord::Base.connection.decrement_open_transactions
+      ActiveRecord::Base.clear_active_connections!
     end
 
     # reload any AR instances

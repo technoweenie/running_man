@@ -1,10 +1,9 @@
 module RunningMan
   class Block
     module TestClassMethods
-      # Runs the given block 
+      # Runs the given block
       def setup_once(&block)
-        test_block = RunningMan::Block.new(block)
-        setup { test_block.run(self) }
+        RunningMan::Block.new(block).setup(self)
       end
 
       def teardown_once(&block)
@@ -26,7 +25,19 @@ module RunningMan
       end
     end
 
-    # Public: This is what is run in the test/unit callback.  #run_once is 
+    # Public: Makes sure the test case class runs this block first.  By default,
+    # This is added as a single #setup callback.  Override this method if the
+    # underlying TestCase #setup implementation varies.
+    #
+    # test_class - A class inheriting from Test::Unit::TestCase
+    #
+    # Returns nothing.
+    def setup(test_class)
+      block = self
+      test_class.setup { block.run(self) }
+    end
+
+    # Public: This is what is run in the test/unit callback.  #run_once is
     # called only the first time, and #run_always is always called.
     #
     # binding - Object that is running the test (usually a Test::Unit::TestCase).
