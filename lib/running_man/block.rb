@@ -94,8 +94,7 @@ module RunningMan
   end
 end
 
-# TODO: Add MiniTest support for ruby 1.9
-if defined?(Test::Unit::TestSuite) && defined?(Test::Unit::TestCase)
+if defined?(Test::Unit::TestCase)
   module Test
     module Unit
       class TestCase
@@ -103,7 +102,13 @@ if defined?(Test::Unit::TestSuite) && defined?(Test::Unit::TestCase)
           @final_teardowns ||= []
         end
       end
+    end
+  end
+end
 
+if defined?(Test::Unit::TestSuite)
+  module Test
+    module Unit
       class TestSuite
         def run(result, &progress_block) # :nodoc:
           yield(STARTED, name)
@@ -121,6 +126,22 @@ if defined?(Test::Unit::TestSuite) && defined?(Test::Unit::TestCase)
           yield(FINISHED, name)
         end
       end
+    end
+  end
+end
+
+if defined?(MiniTest::Unit)
+  module MiniTest
+    class Unit
+      def _run_suite_with_rm(suite, type)
+        ret = _run_suite_without_rm(suite, type)
+        suite.final_teardowns.each do |teardown|
+          teardown.run(suite)
+        end if suite.respond_to?(:final_teardowns)
+        ret
+      end
+      alias _run_suite_without_rm _run_suite
+      alias _run_suite _run_suite_with_rm
     end
   end
 end
