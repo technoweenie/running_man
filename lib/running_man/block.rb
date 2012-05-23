@@ -120,7 +120,12 @@ if defined?(Test::Unit::TestSuite)
           end
           if klass_to_teardown
             klass_to_teardown.final_teardowns.each do |teardown|
-              teardown.run(@tests.last)
+              begin
+                teardown.run(@tests.last)
+              rescue
+                puts "#{$!.class} on #{klass_to_teardown} teardown: #{$!}"
+                $!.backtrace { |b| puts ">> #{b}" }
+              end
             end
           end
           yield(FINISHED, name)
@@ -136,7 +141,12 @@ if defined?(MiniTest::Unit)
       def _run_suite_with_rm(suite, type)
         ret = _run_suite_without_rm(suite, type)
         suite.final_teardowns.each do |teardown|
-          teardown.run(suite)
+          begin
+            teardown.run(suite)
+          rescue
+            puts "#{$!.class} on #{suite} teardown: #{$!}"
+            $!.backtrace { |b| puts ">> #{b}" }
+          end
         end if suite.respond_to?(:final_teardowns)
         ret
       end
