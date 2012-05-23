@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__))
 
 module RunningMan
-  VERSION = '0.3.0'
+  VERSION = '0.3.9'
 
   # Public: Sets up any helper class methods in TestClassMethods on the 
   # specified test case class.
@@ -14,7 +14,7 @@ module RunningMan
   #   # extends ActiveSupport::TestCase
   #   RunningMan::Block.setup_on ActiveSupport::TestCase
   #
-  #   # extends test/unit with RunningMan::Block::TestClassMethods and 
+  #   # extends test/unit with RunningMan::Block::TestClassMethods and
   #   # RunningMan::FooBlock::TestClassMethods
   #   RunningMan::Block.setup_on Test::Unit::TestCase, :FooBlock
   #
@@ -24,7 +24,7 @@ module RunningMan
   #
   # source   - The class to extend.  Usually Test::Unit::TestCase.
   # *klasses - Optional Array of RunningMan::Block subclasses or Symbols.
-  # 
+  #
   # Returns nothing.
   def self.setup_on(source, *klasses)
     klasses.unshift(Block)
