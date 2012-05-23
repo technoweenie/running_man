@@ -66,7 +66,7 @@ module RunningMan
     end
 
     # This sets the instance variables set from #run_once on the test case.
-    # 
+    #
     # binding - The same Object that is given to #run.
     #
     # Returns nothing.
