@@ -37,6 +37,9 @@ module RunningMan
     # Open a new transaction before running any test.
     def setup_transaction
       ActiveRecord::Base.connection.increment_open_transactions
+      if ActiveRecord::Base.connection.repond_to?(:transaction_joinable=)
+        ActiveRecord::Base.connection.transaction_joinable = false
+      end
       ActiveRecord::Base.connection.begin_db_transaction
     end
 
