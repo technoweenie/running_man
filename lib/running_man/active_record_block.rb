@@ -42,8 +42,10 @@ module RunningMan
 
     # Rollback our transaction, returning our fixtures to a pristine state.
     def teardown_transaction
-      ActiveRecord::Base.connection.rollback_db_transaction
-      ActiveRecord::Base.connection.decrement_open_transactions
+      if ActiveRecord::Base.connection.open_transactions != 0
+        ActiveRecord::Base.connection.rollback_db_transaction
+        ActiveRecord::Base.connection.decrement_open_transactions
+      end
       ActiveRecord::Base.clear_active_connections!
     end
 
