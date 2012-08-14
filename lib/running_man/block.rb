@@ -142,7 +142,7 @@ if defined?(MiniTest::Unit)
         ret = _run_suite_without_rm(suite, type)
         suite.final_teardowns.each do |teardown|
           begin
-            teardown.run(suite)
+            teardown.run(suite.new('teardown'))
           rescue
             puts "#{$!.class} on #{suite} teardown: #{$!}"
             $!.backtrace { |b| puts ">> #{b}" }
