@@ -141,16 +141,18 @@ if defined?(MiniTest::Unit)
       def _run_suite_with_rm(suite, type)
         ret = _run_suite_without_rm(suite, type)
 
-        final = suite.new('object_id')
-        final.run self
-        suite.final_teardowns.each do |teardown|
-          begin
-            teardown.run(final)
-          rescue
-            puts "#{$!.class} on #{suite} teardown: #{$!}"
-            $!.backtrace { |b| puts ">> #{b}" }
+        if suite.respond_to?(:final_teardowns) && suite.final_teardowns.any?
+          final = suite.new('object_id') # run fake test
+          final.run self
+          suite.final_teardowns.each do |teardown|
+            begin
+              teardown.run(final)
+            rescue
+              puts "#{$!.class} on #{suite} teardown: #{$!}"
+              $!.backtrace { |b| puts ">> #{b}" }
+            end
           end
-        end if suite.respond_to?(:final_teardowns)
+        end
 
         ret
       end
