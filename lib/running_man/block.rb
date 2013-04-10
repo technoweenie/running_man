@@ -140,14 +140,18 @@ if defined?(MiniTest::Unit)
     class Unit
       def _run_suite_with_rm(suite, type)
         ret = _run_suite_without_rm(suite, type)
+
+        final = suite.new('object_id')
+        final.run self
         suite.final_teardowns.each do |teardown|
           begin
-            teardown.run(suite.new('teardown'))
+            teardown.run(final)
           rescue
             puts "#{$!.class} on #{suite} teardown: #{$!}"
             $!.backtrace { |b| puts ">> #{b}" }
           end
         end if suite.respond_to?(:final_teardowns)
+
         ret
       end
       alias _run_suite_without_rm _run_suite
